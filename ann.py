@@ -3,6 +3,8 @@ from keras.layers import Dense
 from sklearn.metrics import mean_squared_error, r2_score
 from keras.layers import Dropout
 import math
+from keras.optimizers import Adam
+import numpy as np
 
 
 #Defining ANN model
@@ -13,7 +15,7 @@ def model_ANN(inputs, outputs, layers, neurons, batch, opt, ker, epo, drop, act,
     if layers == 1:  
         model.add(Dense(neurons, input_dim= inputs, kernel_initializer=ker, activation=act))
         model.add(Dropout(drop))
-        model.add(Dense(outputs, kernel_initializer=ker,activation='linear'))
+        model.add(Dense(outputs, kernel_initializer=ker, activation='linear'))
         n = (neurons,)
         
        
@@ -54,13 +56,31 @@ def model_ANN(inputs, outputs, layers, neurons, batch, opt, ker, epo, drop, act,
     print('Batch: ', batch, '  Optimizer: ', opt , '  Initializer: ' , ker )
     print('Epochs: ', epo, '  Dropout: ', drop, ' Activation: ', act )
     
-    model.compile(loss='mean_squared_error', optimizer= opt, metrics=['mae'])
-    history = model.fit(x_t, y_t, epochs= epo, batch_size= batch, verbose=1, validation_data=(x_v, y_v))
+    # Create optimizer with lower learning rate
+    optimizer = Adam(learning_rate=0.001)
+    
+    model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['mae'])
+    
+    # Add early stopping to prevent overfitting
+    from keras.callbacks import EarlyStopping
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+    
+    history = model.fit(x_t, y_t, 
+                       epochs=epo, 
+                       batch_size=batch, 
+                       verbose=1, 
+                       validation_data=(x_v, y_v),
+                       callbacks=[early_stopping])
      
     predictions = model.predict(x_t)
-    predictions_v =  model.predict(x_v)
+    predictions_v = model.predict(x_v)
 
-#ANN Performance metrics list
+    # Check for NaN values
+    if np.isnan(predictions).any() or np.isnan(predictions_v).any():
+        print("Warning: NaN values detected in predictions")
+        return float('inf'), float('inf'), float('inf'), float('inf'), 0, 0
+
+    #ANN Performance metrics list
     MSE_scaled = mean_squared_error(y_t, predictions)
     RMSE = math.sqrt(MSE_scaled)
     MSE_scaled_val = mean_squared_error(y_v, predictions_v)

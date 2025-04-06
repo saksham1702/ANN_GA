@@ -31,124 +31,38 @@ def crossover(parents, offspring_size):
     return offspring
 
 def mutation(offspring_crossover, sol_per_pop, num_parents_mating, mutation_percent):
-
-    offspring_crossover_a = numpy.asarray(offspring_crossover) # convert to array to do shape calculations
-    num_mutations = numpy.uint32((mutation_percent*offspring_crossover_a.shape[1])/100)
-    mutation_indices = numpy.array(random.sample(range(0, offspring_crossover_a.shape[1]), num_mutations))
-    offspring_mutation = offspring_crossover * sol_per_pop
-    offspring_mutation = offspring_mutation [:sol_per_pop-offspring_crossover_a.shape[0]]
-    offspring_mutation = numpy.asarray(offspring_mutation, dtype=object)
-
-    for index in range(sol_per_pop-int(num_parents_mating/2)):
-        if 0 in mutation_indices: 
-            if 1 not in mutation_indices:
-                value = random.randint(1,4)
-                offspring_mutation[index, 0] = value
-                
-                if value == 1:  
-                    n1 = random.randint(1,20)
-                    n = n1
-                elif value == 2: 
-                    n1 = random.randint(1,20)
-                    n2 = random.randint(1,20)
-                    n = n1,n2
-                elif value == 3: 
-                    n1 = random.randint(1,20)
-                    n2 = random.randint(1,20)
-                    n3 = random.randint(1,20)
-                    n = n1,n2,n3
-                elif value == 4: 
-                    n1 = random.randint(1,20)
-                    n2 = random.randint(1,20)    
-                    n3 = random.randint(1,20)
-                    n4 = random.randint(1,20)
-                    n = n1,n2,n3,n4
-                offspring_mutation[index, 1] = n
+    # Convert to list of lists first to handle mixed types
+    offspring_mutation = []
+    for _ in range(sol_per_pop - len(offspring_crossover)):
+        # Create a copy of a random parent
+        parent = random.choice(offspring_crossover)
+        new_offspring = parent.copy()
         
-        elif [0 and 1] in mutation_indices:
-            value = random.randint(1,4)
-            offspring_mutation[index, 0] = value
+        # Apply mutations
+        if random.random() < mutation_percent/100:
+            # Mutate layers
+            new_offspring[0] = random.choice([1,2,3,4])
             
-            if value == 1:  
-                n1 = random.randint(1,20)
-                n = n1
-            elif value == 2: 
-                n1 = random.randint(1,20)
-                n2 = random.randint(1,20)
-                n = n1,n2
-            elif value == 3: 
-                n1 = random.randint(1,20)
-                n2 = random.randint(1,20)
-                n3 = random.randint(1,20)
-                n = n1,n2,n3
-            elif value == 4: 
-                n1 = random.randint(1,20)
-                n2 = random.randint(1,20)    
-                n3 = random.randint(1,20)
-                n4 = random.randint(1,20)
-                n = n1,n2,n3,n4
+            # Mutate neurons based on new layer count
+            if new_offspring[0] == 1:
+                new_offspring[1] = random.randint(1,20)
+            elif new_offspring[0] == 2:
+                new_offspring[1] = (random.randint(1,20), random.randint(1,20))
+            elif new_offspring[0] == 3:
+                new_offspring[1] = (random.randint(1,20), random.randint(1,20), random.randint(1,20))
+            else:
+                new_offspring[1] = (random.randint(1,20), random.randint(1,20), random.randint(1,20), random.randint(1,20))
             
-            offspring_mutation[index, 1] = n
+            # Mutate other parameters
+            new_offspring[2] = random.choice([10, 25, 50, 100, 200])  # batch
+            new_offspring[3] = random.choice(['Adam', 'Adagrad', 'RMSprop', 'sgd'])  # optimizer
+            new_offspring[4] = random.choice(['uniform','normal'])  # kernel initializer
+            new_offspring[5] = random.choice([50, 100, 150, 200])  # epochs
+            new_offspring[6] = random.choice([0, 0.1, 0.2, 0.3, 0.4, 0.5])  # dropout
+            new_offspring[7] = random.choice([0.05, 0.10, 0.15, 0.20, 0.25, 0.30])  # training
+            new_offspring[8] = random.choice(['relu', 'tanh', 'sigmoid', 'elu'])  # activation
         
-        if 1 in mutation_indices:
-            if 0 not in mutation_indices:
-                value = random.randint(1,4)
-                offspring_mutation[index, 0] = value
-                
-                if value == 1:  
-                    n1 = random.randint(1,20)
-                    n = n1
-                elif value == 2: 
-                    n1 = random.randint(1,20)
-                    n2 = random.randint(1,20)
-                    n = n1,n2
-                elif value == 3: 
-                    n1 = random.randint(1,20)
-                    n2 = random.randint(1,20)
-                    n3 = random.randint(1,20)
-                    n = n1,n2,n3
-                elif value == 4: 
-                    n1 = random.randint(1,20)
-                    n2 = random.randint(1,20)    
-                    n3 = random.randint(1,20)
-                    n4 = random.randint(1,20)
-                    n = n1,n2,n3,n4
-                
-                offspring_mutation[index, 1] = n
-            
-        if 2 in mutation_indices:
-            b = [10, 25, 50, 100, 200]
-            value = random.choice(b)
-            offspring_mutation[index, 2] = value
-            
-        if 3 in mutation_indices:
-            o = ['Adam', 'Adagrad', 'RMSprop', 'sgd']
-            value = random.choice(o)
-            offspring_mutation[index, 3] = value
-
-        if 4 in mutation_indices:
-            k = ['uniform','normal']
-            value = random.choice(k)
-            offspring_mutation[index, 4] = value
-            
-        if 5 in mutation_indices:
-            e = [50, 100, 150, 200]
-            value = random.choice(e)
-            offspring_mutation[index, 5] = value
-
-        if 6 in mutation_indices:
-            d = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
-            value = random.choice(d)
-            offspring_mutation[index, 6] = value
-            
-        if 7 in mutation_indices:
-            t = [0.05, 0.10,0.15,0.20,0.25,0.30]
-            value = random.choice(t)
-            offspring_mutation[index, 7] = value
-        
-        if 8 in mutation_indices:
-            at = ['relu', 'tanh', 'sigmoid', 'elu']
-            value = random.choice(at)
-            offspring_mutation[index, 8] = value
-     
-    return offspring_mutation
+        offspring_mutation.append(new_offspring)
+    
+    # Combine original offspring with mutated ones
+    return offspring_crossover + offspring_mutation

@@ -17,7 +17,7 @@ config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads = NUM_PARALLEL_EX
          allow_soft_placement = True, 
          device_count = {'CPU': NUM_PARALLEL_EXEC_UNITS })
 session = tf.compat.v1.Session(config=config)
-tf.compat.v1.keras.backend.set_session(session)
+tf.compat.v1.keras.backend.set_epsilon(session)
 
 os.environ["OMP_NUM_THREADS"] = str(NUM_PARALLEL_EXEC_UNITS)
 os.environ["KMP_BLOCKTIME"] = "30"
@@ -28,7 +28,7 @@ os.environ["KMP_AFFINITY"]= "granularity=fine,verbose,compact,1,0"
 
 #Genetic Algorithm Parameters
 
-num_generations = 50
+num_generations = 4
 sol_per_pop = 40
 num_parents_mating = 8
 mutation_percent = 50
@@ -50,7 +50,7 @@ final_list=[]
 
 #Create initial population
 for curr_sol in numpy.arange(0, sol_per_pop):
-    layers= random.choice(layers_list)
+    layers = random.choice(layers_list)
     batch = random.choice(batch_list)
     opt = random.choice(optimisers)
     ker = random.choice(kernel_initializer)
@@ -59,29 +59,21 @@ for curr_sol in numpy.arange(0, sol_per_pop):
     train = random.choice(training)
     act = random.choice(activation)
      
+    # Initialize neurons based on number of layers
     if layers == 1:  
-        n1 = random.randint(1,20)
-        neurons = n1
+        neurons = random.randint(1,20)
     elif layers == 2: 
-        n1 = random.randint(1,20)
-        n2 = random.randint(1,20)
-        neurons = n1,n2
+        neurons = (random.randint(1,20), random.randint(1,20))
     elif layers == 3: 
-        n1 = random.randint(1,20)
-        n2 = random.randint(1,20)
-        n3 = random.randint(1,20)
-        neurons = n1,n2,n3
+        neurons = (random.randint(1,20), random.randint(1,20), random.randint(1,20))
     elif layers == 4: 
-        n1 = random.randint(1,20)
-        n2 = random.randint(1,20)    
-        n3 = random.randint(1,20)
-        n4 = random.randint(1,20)
-        neurons = n1,n2,n3,n4
+        neurons = (random.randint(1,20), random.randint(1,20), random.randint(1,20), random.randint(1,20))
     
+    # Store all values as a list
     initial_population.append([layers, neurons, batch, opt, ker, epo, drop, train, act])
 
-#Initial population
-pop_inputs = np.asarray(initial_population)
+#Convert to numpy array with dtype=object to handle mixed types
+pop_inputs = np.array(initial_population, dtype=object)
 del(initial_population)
 
 #Start GA process
@@ -112,7 +104,7 @@ for generation in range(num_generations):
         print('\n Test/Training :', ((1-pop_inputs[index][7])*100),'/',pop_inputs[index][7]*100)
         
         #Export ANN metric performance
-        RMSE, RMSE_val, mae, val_mae, R2, R2_v = ann.model_ANN(X_train.shape[1], Y_train.shape[1], pop_inputs[index][0], pop_inputs[index][1],\
+        RMSE, RMSE_val, mae, val_mae, R2, R2_v = ann.model_ANN(X_train.shape[1], 1, pop_inputs[index][0], pop_inputs[index][1],\
                                    pop_inputs[index][2], pop_inputs[index][3], pop_inputs[index][4],
                                    pop_inputs[index][5], pop_inputs[index][6], pop_inputs[index][8],
                                    X_train, Y_train, X_test, Y_test)
@@ -167,11 +159,19 @@ for generation in range(num_generations):
     print(offspring_mutation)
         
     # New population for generation g+1
-    pop_inputs[0:len(offspring_crossover), :] = offspring_crossover
+    # Fix the population size mismatch by ensuring offspring_mutation has the correct size
+    remaining_size = sol_per_pop - len(offspring_crossover)
+    if len(offspring_mutation) > remaining_size:
+        offspring_mutation = offspring_mutation[:remaining_size]
+    elif len(offspring_mutation) < remaining_size:
+        # If we have fewer mutations than needed, duplicate some random ones
+        while len(offspring_mutation) < remaining_size:
+            offspring_mutation.append(random.choice(offspring_mutation))
+    
     pop_inputs[len(offspring_crossover):, :] = offspring_mutation
     print('NEW INPUTS :\n', pop_inputs )
     
-    
+    # Store results for this generation
     for x in range(len(list_inputs)):
         for y in range(len(list_inputs[0])):
             pre_list = list_inputs[x][y]
@@ -180,8 +180,6 @@ for generation in range(num_generations):
             pre_list.append(list_objective[x][y][0])
             for w in range(len(list_other_metrics[x][y])):
                 pre_list.append(list_other_metrics[x][y][w])
-    
-            
             final_list.append(pre_list)      
    
     del(fitness, objective, other_metrics, parents, offspring_mutation, offspring_crossover, list_inputs, list_fitness, list_objective, list_other_metrics, pre_list)
@@ -189,11 +187,12 @@ for generation in range(num_generations):
     
 #Insert headers to final list
 final_list.insert(0, ['Layers', 'Neurons', 'batch', 'optimiser', 'keras', 'epochs', 'dropout', 'train %', 'activation', 'RMSE', 'VAL_RMSE', 'Objective', 'mae', 'val_mae', 'R2', 'R2_v' ])
-final_list
- 
+
 #Saving all ANN structures, hyperparameters and metrics
-with open('FINAL_RESULTS.csv', 'w', newline='') as myfile:
-     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-     wr.writerows(final_list)
+with open('results.csv', 'w', newline='') as myfile:
+    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+    wr.writerows(final_list)
+    
+print("\nResults have been saved to results.csv")
         
 

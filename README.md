@@ -34,7 +34,7 @@ NeuroGenetic/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/NeuroGenetic.git
+git clone ..........
 cd NeuroGenetic
 ```
 

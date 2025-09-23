@@ -1,0 +1,88 @@
+INSIGHTS CHECK REPORT
+======================
+
+Total rows: 160
+Generations (inferred): 4
+
+Best Solution
+-------------
+- Objective: 0.9855224855889786
+- Architecture: 2 layers, (4, 10)
+- batch: 10
+- optimizer: Adam
+- activation: elu
+- dropout: 0.0
+- epochs: 200
+- train_split: 0.3
+- RMSE: 0.0131470333348875
+- VAL_RMSE: 0.0158079954871552
+- R2: 0.9998271555144912
+- R2_v: 0.9998064660579143
+- MAE: 0.0178742501884698
+- VAL_MAE: 0.0088322730734944
+
+Per-Generation Objective Stats
+-------------------------------
+Gen 1: best=0.973919, avg=0.473883, worst=-0.172209, std=0.324608
+Gen 2: best=0.983472, avg=0.681239, worst=-0.152599, std=0.343421
+Gen 3: best=0.981974, avg=0.686891, worst=-0.151182, std=0.403516
+Gen 4: best=0.985522, avg=0.776136, worst=-0.050854, std=0.331798
+
+Hyperparameter Impacts (mean Objective)
+---------------------------------------
+optimiser:
+  - RMSprop: 0.778726
+  - Adam: 0.741852
+  - Adagrad: 0.507697
+  - sgd: 0.368594
+activation:
+  - elu: 0.789421
+  - tanh: 0.661119
+  - relu: 0.600588
+  - sigmoid: 0.351736
+kernel_initializer:
+  - normal: 0.738518
+  - uniform: 0.537968
+batch:
+  - 10: 0.874817
+  - 50: 0.700368
+  - 25: 0.612434
+  - 200: 0.379153
+  - 100: 0.265206
+epochs:
+  - 200: 0.826645
+  - 150: 0.758647
+  - 100: 0.407684
+  - 50: 0.338502
+Layers:
+  - 2: 0.861029
+  - 4: 0.634611
+  - 3: 0.412726
+  - 1: 0.266620
+dropout:
+  - 0.0: 0.918631
+  - 0.1: 0.520176
+  - 0.2: 0.438539
+  - 0.3: 0.367614
+  - 0.5: 0.312587
+
+Correlation with Objective
+--------------------------
+- Objective: 1.0000
+- R2_v: 0.9719
+- R2: 0.9643
+- epochs: 0.5158
+- train_split: 0.4111
+- Layers: 0.1506
+- batch: -0.4050
+- dropout: -0.7858
+- mae: -0.9620
+- val_mae: -0.9737
+- RMSE: -0.9967
+- VAL_RMSE: -0.9980
+
+Consistency Checks
+-------------------
+- Best objective >= 0.97? YES (0.985522)
+- Last gen avg > first gen avg? YES
+- Last gen best >= first gen best? YES

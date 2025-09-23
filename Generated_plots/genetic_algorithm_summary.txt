@@ -1,0 +1,76 @@
+================================================================================
+GENETIC ALGORITHM OPTIMIZATION SUMMARY REPORT
+================================================================================
+
+OVERALL STATISTICS:
+----------------------------------------
+Total Solutions Evaluated: 160
+Number of Generations: 4
+Solutions per Generation: 40
+
+BEST SOLUTION:
+----------------------------------------
+Objective Value: 0.985522
+Architecture: 2 layers, (4, 10) neurons
+Hyperparameters:
+  - Batch Size: 10
+  - Optimizer: Adam
+  - Activation: elu
+  - Dropout: 0.00
+  - Epochs: 200
+  - Training Split: 0.30
+Performance Metrics:
+  - Training RMSE: 0.013147
+  - Validation RMSE: 0.015808
+  - Training R²: 0.999827
+  - Validation R²: 0.999806
+  - Training MAE: 0.017874
+  - Validation MAE: 0.008832
+
+GENERATION ANALYSIS:
+----------------------------------------
+Generation 1:
+  - Best Objective: 0.973919
+  - Average Objective: 0.473883
+  - Worst Objective: -0.172209
+  - Standard Deviation: 0.324608
+
+Generation 2:
+  - Best Objective: 0.983472
+  - Average Objective: 0.681239
+  - Worst Objective: -0.152599
+  - Standard Deviation: 0.343421
+
+Generation 3:
+  - Best Objective: 0.981974
+  - Average Objective: 0.686891
+  - Worst Objective: -0.151182
+  - Standard Deviation: 0.403516
+
+Generation 4:
+  - Best Objective: 0.985522
+  - Average Objective: 0.776136
+  - Worst Objective: -0.050854
+  - Standard Deviation: 0.331798
+
+HYPERPARAMETER ANALYSIS:
+----------------------------------------
+Best Performing Hyperparameters:
+  - Most Common Layers: 2
+  - Best Batch Size: 10
+  - Best Optimizer: RMSprop
+  - Best Activation: elu
+  - Best Dropout: 0.00
+  - Best Epochs: 200
+
+CONVERGENCE ANALYSIS:
+----------------------------------------
+Initial Best Objective: 0.973919
+Final Best Objective: 0.985522
+Total Improvement: 0.011604 (1.19%)
+Last Generation Improvement: 0.003548
+Status: NOT CONVERGED (still improving)
+
+================================================================================
+END OF REPORT
+================================================================================

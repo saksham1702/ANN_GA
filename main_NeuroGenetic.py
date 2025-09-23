@@ -8,7 +8,6 @@ import numpy as np
 import random
 import data_input
 import gc
-import visualization
 
 #Parallel units definition
 NUM_PARALLEL_EXEC_UNITS = 4
@@ -77,13 +76,6 @@ for curr_sol in numpy.arange(0, sol_per_pop):
 pop_inputs = np.array(initial_population, dtype=object)
 del(initial_population)
 
-# Initialize visualization tracking
-generation_tracker = {
-    'generations': [],
-    'best_objectives': [],
-    'avg_objectives': [],
-    'worst_objectives': []
-}
 
 #Start GA process
 for generation in range(num_generations):    
@@ -138,18 +130,6 @@ for generation in range(num_generations):
     print(fitness)
     print(objective)
     
-    # Track generation statistics for visualization
-    gen_objectives = [obj[0] for obj in objective]
-    generation_tracker['generations'].append(generation + 1)
-    generation_tracker['best_objectives'].append(max(gen_objectives))
-    generation_tracker['avg_objectives'].append(np.mean(gen_objectives))
-    generation_tracker['worst_objectives'].append(min(gen_objectives))
-    
-    print(f"\n📊 Generation {generation+1} Statistics:")
-    print(f"   Best Objective: {max(gen_objectives):.6f}")
-    print(f"   Average Objective: {np.mean(gen_objectives):.6f}")
-    print(f"   Worst Objective: {min(gen_objectives):.6f}")
-    print(f"   Improvement: {max(gen_objectives) - (generation_tracker['best_objectives'][-2] if len(generation_tracker['best_objectives']) > 1 else max(gen_objectives)):.6f}")
     
     list_fitness.append(fitness)
     list_objective.append(objective)
@@ -216,33 +196,5 @@ with open('results.csv', 'w', newline='') as myfile:
     wr.writerows(final_list)
     
 print("\nResults have been saved to results.csv")
-
-# Generate real-time progress plot
-print("\n📈 Generating real-time progress visualization...")
-visualization.plot_realtime_progress(generation_tracker)
-
-# Generate comprehensive visualizations
-print("\n" + "="*60)
-print("GENERATING COMPREHENSIVE VISUALIZATIONS...")
-print("="*60)
-
-# Create visualizer instance with results data
-visualizer = visualization.GeneticAlgorithmVisualizer(final_list)
-
-# Generate all visualization plots
-visualizer.create_all_visualizations()
-
-print("\n" + "="*60)
-print("GENETIC ALGORITHM OPTIMIZATION COMPLETED!")
-print("="*60)
-print("Generated Files:")
-print("📊 results.csv - Complete results data")
-print("📈 fitness_evolution.png - Fitness metrics evolution")
-print("🔍 hyperparameter_analysis.png - Hyperparameter impact analysis")
-print("🏆 best_solutions_analysis.png - Top 10 solutions analysis")
-print("📉 convergence_analysis.png - GA convergence behavior")
-print("🔥 correlation_heatmap.png - Variable correlation matrix")
-print("📋 genetic_algorithm_summary.txt - Comprehensive summary report")
-print("="*60)
         
 

@@ -32,12 +32,12 @@ def crossover(parents, offspring_size):
 
 def mutation(offspring_crossover, sol_per_pop, num_parents_mating, mutation_percent):
 
-    offspring_crossover_a = numpy.asarray(offspring_crossover) # convert to array to do shape calculations
+    offspring_crossover_a = numpy.array(offspring_crossover, dtype=object) # convert to array with object dtype
     num_mutations = numpy.uint32((mutation_percent*offspring_crossover_a.shape[1])/100)
     mutation_indices = numpy.array(random.sample(range(0, offspring_crossover_a.shape[1]), num_mutations))
     offspring_mutation = offspring_crossover * sol_per_pop
     offspring_mutation = offspring_mutation [:sol_per_pop-offspring_crossover_a.shape[0]]
-    offspring_mutation = numpy.asarray(offspring_mutation, dtype=object)
+    offspring_mutation = numpy.array(offspring_mutation, dtype=object)
 
     for index in range(sol_per_pop-int(num_parents_mating/2)):
         if 0 in mutation_indices: 

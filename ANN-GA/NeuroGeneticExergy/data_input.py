@@ -4,13 +4,13 @@ from sklearn.model_selection import train_test_split
 import gc
 
 def data(training):
-    dataframe = pd.read_csv("Data.csv", sep=',', header = None)
+    dataframe = pd.read_csv("manufacturing.csv", sep=',', header=0)  # header=0 to skip header row
     dataset = dataframe.values
     
-    #Locate input variables in the dataset
-    X = dataset[:,0:64]
-    #Locate output variables in the dataset
-    Y = dataset[:,-3:]
+    #Locate input variables in the dataset (5 features: Temperature, Pressure, Temp*Pressure, Material Fusion, Material Transformation)
+    X = dataset[:,0:5]  # First 5 columns as input
+    #Locate output variables in the dataset (Quality Rating)
+    Y = dataset[:,-1:] # Last column as output
     
         
     #split X, Y into a train and test set

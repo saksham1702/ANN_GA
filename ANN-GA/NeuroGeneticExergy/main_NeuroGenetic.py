@@ -9,25 +9,33 @@ import random
 import data_input
 import gc
 
-#Parallel units definition
-NUM_PARALLEL_EXEC_UNITS = 4
+#Parallel units definition - Kaggle optimized
+# Kaggle has 4 CPUs, but we'll use 2 to be safe
+NUM_PARALLEL_EXEC_UNITS = 2
 
 # TensorFlow 2.x configuration
 tf.config.threading.set_intra_op_parallelism_threads(NUM_PARALLEL_EXEC_UNITS)
-tf.config.threading.set_inter_op_parallelism_threads(2)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 
 os.environ["OMP_NUM_THREADS"] = str(NUM_PARALLEL_EXEC_UNITS)
 os.environ["KMP_BLOCKTIME"] = "30"
 os.environ["KMP_SETTINGS"] = "1"
 os.environ["KMP_AFFINITY"]= "granularity=fine,verbose,compact,1,0"
 
+# Kaggle environment detection
+print("🔍 Environment Detection:")
+print(f"  Running on: {'Kaggle' if os.path.exists('/kaggle/input') else 'Local'}")
+print(f"  CPUs configured: {NUM_PARALLEL_EXEC_UNITS}")
+print(f"  TensorFlow version: {tf.__version__}")
+print("="*50)
+
 
 
 #Genetic Algorithm Parameters
-
-num_generations = 50
-sol_per_pop = 40
-num_parents_mating = 8
+# Reduced for Kaggle to avoid timeout (you can increase these)
+num_generations = 8  # Reduced from 50 for faster execution
+sol_per_pop = 20      # Reduced from 40 for faster execution  
+num_parents_mating = 4 # Reduced accordingly
 mutation_percent = 50
 
 #ANN hyperparameter definition search space
@@ -188,9 +196,31 @@ for generation in range(num_generations):
 final_list.insert(0, ['Layers', 'Neurons', 'batch', 'optimiser', 'keras', 'epochs', 'dropout', 'train %', 'activation', 'RMSE', 'VAL_RMSE', 'Objective', 'mae', 'val_mae', 'R2', 'R2_v' ])
 final_list
  
+# Kaggle-compatible file saving
+import os
+kaggle_output_dir = '/kaggle/working/' if os.path.exists('/kaggle/working/') else './'
+
 #Saving all ANN structures, hyperparameters and metrics
-with open('FINAL_RESULTS.csv', 'w', newline='') as myfile:
+results_file = os.path.join(kaggle_output_dir, 'FINAL_RESULTS.csv')
+with open(results_file, 'w', newline='') as myfile:
      wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
      wr.writerows(final_list)
-        
+
+print(f"\nResults saved to: {results_file}")
+print(f"Total solutions evaluated: {len(final_list)-1}")  # -1 for header
+
+# Display best solution
+if len(final_list) > 1:
+    # Sort by objective (column 11, 0-indexed)
+    best_solutions = sorted(final_list[1:], key=lambda x: float(x[11]), reverse=True)
+    print("\n" + "="*60)
+    print("🏆 TOP 3 BEST SOLUTIONS:")
+    print("="*60)
+    headers = final_list[0]
+    for i, sol in enumerate(best_solutions[:3]):
+        print(f"\nRank #{i+1}:")
+        for j, (header, value) in enumerate(zip(headers, sol)):
+            print(f"  {header}: {value}")
+        print(f"  Objective Score: {sol[11]}")
+    print("="*60)
 

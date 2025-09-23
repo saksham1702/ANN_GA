@@ -60,6 +60,13 @@ def model_ANN(inputs, outputs, layers, neurons, batch, opt, ker, epo, drop, act,
     predictions = model.predict(x_t)
     predictions_v =  model.predict(x_v)
 
+    # Check for NaN values and handle them
+    import numpy as np
+    if np.isnan(predictions).any() or np.isnan(predictions_v).any():
+        print("Warning: NaN values detected in predictions!")
+        # Return poor performance metrics if NaN detected
+        return 999.0, 999.0, 999.0, 999.0, -999.0, -999.0
+
 #ANN Performance metrics list
     MSE_scaled = mean_squared_error(y_t, predictions)
     RMSE = math.sqrt(MSE_scaled)

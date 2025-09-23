@@ -19,14 +19,14 @@ def data(training):
     del(dataframe, X, Y)
     gc.collect()
     
-        # created scaler
-    scaler = StandardScaler()
-        # fit scaler on training dataset
-    scaler.fit(Y_train)
-        # transform training dataset
-    Y_train = scaler.transform(Y_train)
-        # transform test dataset
-    Y_test = scaler.transform(Y_test)
+    # Scale input features only (X), not the output (Y) for manufacturing quality data
+    scaler_X = StandardScaler()
+    X_train = scaler_X.fit_transform(X_train)
+    X_test = scaler_X.transform(X_test)
+    
+    # For manufacturing quality (0-100 scale), normalize Y to 0-1 range instead of standardizing
+    Y_train = Y_train / 100.0
+    Y_test = Y_test / 100.0
     
     return X_train, X_test, Y_train, Y_test
  

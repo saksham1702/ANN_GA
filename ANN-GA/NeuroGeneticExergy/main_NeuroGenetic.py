@@ -33,7 +33,7 @@ print("="*50)
 
 #Genetic Algorithm Parameters
 # Reduced for Kaggle to avoid timeout (you can increase these)
-num_generations = 8  # Reduced from 50 for faster execution
+num_generations = 5  # Reduced from 50 for faster execution
 sol_per_pop = 20      # Reduced from 40 for faster execution  
 num_parents_mating = 4 # Reduced accordingly
 mutation_percent = 50
